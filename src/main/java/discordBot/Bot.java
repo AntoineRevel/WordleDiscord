@@ -1,4 +1,4 @@
-package Test;
+package discordBot;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
@@ -20,7 +20,7 @@ public class Bot {
     public void start() throws LoginException, InterruptedException {
         JDABuilder.createDefault("OTU3MjM3ODU1MjEyNjgzMjk0.Yj73OQ.BRUXbb-dAU7QMsSR1S447U26aDo")
                 .addEventListeners(
-                        new ReactionExample(this),
+                        new ButtumStart(this),
                         eventWaiter
                 )
                 .build()
