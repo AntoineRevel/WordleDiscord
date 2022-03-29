@@ -1,5 +1,6 @@
 package discordBot;
 
+import WordleApp.ApplicationMots;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -59,7 +60,7 @@ public class ButtumStart extends ListenerAdapter {
                             Button.of(ButtonStyle.PRIMARY, "menu:play", "Play", Emoji.fromUnicode("\uD83D\uDD75️")).asDisabled(),     // 🕵️‍
                             Button.of(ButtonStyle.PRIMARY, "menu:language", "Language", Emoji.fromUnicode("\uD83D\uDE03")).asDisabled(),     //
                             Button.of(ButtonStyle.PRIMARY, "menu:lettres", "Number of letters", Emoji.fromUnicode("\uD83D\uDD24")).asDisabled() // 🔤
-                    ).queue();
+                    ).queue(this::startParty);
             case "menu:language" -> event.editMessage("Choice of the language of the words to use.").setActionRow(
                     Button.of(ButtonStyle.SECONDARY, "language:en", "English", Emoji.fromUnicode("\uD83C\uDDFA\uD83C\uDDF8")),//
                     Button.of(ButtonStyle.SECONDARY, "language:fr", "French", Emoji.fromUnicode("\uD83C\uDDEB\uD83C\uDDF7")) //🇫🇷
@@ -82,7 +83,12 @@ public class ButtumStart extends ListenerAdapter {
 
     }
 
-    private void entreLettre(InteractionHook inte) {
+    private void startParty(InteractionHook interactionHook){
+        ApplicationMots am=new ApplicationMots(language,size,bot,interactionHook);
+        am.start();
+    }
+
+    private void entreLettre(InteractionHook interactionHook) {
         bot.getEventWaiter().waitForEvent(
                 MessageReceivedEvent.class,
                 e -> {
@@ -110,7 +116,7 @@ public class ButtumStart extends ListenerAdapter {
                 }
                 , 1, TimeUnit.MINUTES,
                 () -> {
-                    inte.getInteraction().getMessageChannel().sendMessage("You didn't respond in time!").queue();
+                    interactionHook.getInteraction().getMessageChannel().sendMessage("You didn't respond in time!").queue();
                 }
 
         );

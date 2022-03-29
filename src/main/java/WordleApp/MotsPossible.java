@@ -1,30 +1,32 @@
 package WordleApp;
 
+import discordBot.Bot;
+import net.dv8tion.jda.api.entities.MessageChannel;
+
 import java.io.File;
 import java.util.*;
 
 public class MotsPossible {
 
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_gras = "\u001B[1m";
+    public static final String GRAS = "**";
 
     private final int longueur;
     private final List<Reponse.Rep[]> possibiliter;
     private List<String> motsPossible;
 
+    private final MessageChannel messageChannel;
+
 
     private int div;
 
 
-    public MotsPossible(int longueur, String langue) {
+    public MotsPossible(int longueur, String langue, MessageChannel messageChannel) {
         File doc = new File(langue);
         Mots mots = new Mots(doc);
         this.longueur = longueur;
         motsPossible = mots.motsde(longueur);
         this.possibiliter = possibiliter();
-
+        this.messageChannel=messageChannel;
     }
 
 
@@ -91,10 +93,10 @@ public class MotsPossible {
         this.motsPossible = elimine(reponse);
         int mtm = motsPossible.size();
         int dif = avant - mtm;
-        System.out.println("On avait " + avant + " mots possible et on en élimine " + ANSI_gras + dif + ANSI_RESET + ".");
-        System.out.println("On a donc " + mtm + " mots restants :");
+        messageChannel.sendMessage("We had "+avant+" words and we eliminated "+GRAS+dif+GRAS+".").queue();
+        messageChannel.sendMessage("There are still " +mtm+" possible words.").queue();
         if (motsPossible.size() == 1) {
-            System.out.println(ANSI_GREEN + motsPossible.get(0) + ANSI_RESET);
+            messageChannel.sendMessage(GRAS+motsPossible.get(0)+GRAS+ " is the word we're looking for!").queue();
         }
         //System.out.println(motsPossible);
     }
@@ -107,7 +109,7 @@ public class MotsPossible {
         div = div + probaXsize;
         //System.out.print(mult+"="+probaXsize+"*"+nbElimination+",");
 
-        return (double) mult;
+        return mult;
     }
 
     private List<String> elimine(Reponse reponse) {
@@ -175,8 +177,7 @@ public class MotsPossible {
         int T = motsPossible.size();
         for (String str : motsPossible) {
             double E = calculEsperance(str);
-            System.out.print("[" + i + "/" + T + "] ");
-            System.out.println(str + " avec un score de: " + E);
+            messageChannel.sendMessage("[" + i + "/" + T + "] "+str + " with a score of : " + String.format("%.3f",E)).queue();
             i++;
             dic.put(str, E);
             double max = E;
@@ -193,15 +194,17 @@ public class MotsPossible {
         }
         if (listMeilleur.size() == 1) {
             System.out.print("La meilleure proposition est ");
-            System.out.print(ANSI_RED + listMeilleur.get(0) + " " + ANSI_RESET);
+            messageChannel.sendMessage("The best entry is :").queue();
+            messageChannel.sendMessage("> "+GRAS+ listMeilleur.get(0)+GRAS).queue();
+            //System.out.print(ANSI_RED + listMeilleur.get(0) + " " + ANSI_RESET);
         } else {
-            System.out.println("Les mots qui retirent le plus sont : ");
+            System.out.println("Les mots qui retirent le plus sont : "); //faire bouton choix
             for (int j = 0; j < listMeilleur.size(); j++) {
                 System.out.println((j + 1) + "- " + listMeilleur.get(j));
             }
         }
-        double esp = (double) con;
-        System.out.println("avec une espérance de " + ANSI_gras + String.format("%.3f", esp) + ANSI_RESET + " mots éliminés.");
+        double esp =  con;
+        messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%.3f", esp) + GRAS + " words eliminated.").queue();
         return listMeilleur;
     }
 
