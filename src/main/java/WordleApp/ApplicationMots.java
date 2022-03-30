@@ -25,8 +25,8 @@ public class ApplicationMots {
             "3- Longueur mots",
             "4- Exit",
     };
-    private String langue;
-    private int longeur = 5;
+    private final String langue;
+    private final int longeur;
 
     private final Bot bot;
     private final MessageChannel messageChannel;
@@ -67,33 +67,13 @@ public class ApplicationMots {
 
     public void start() {
         afficheRegle();
-        ouverture = ouverture(MP);
+        lastProposition = ouverture(MP);
         choixReponse();
     }
 
     public void start2(String rep) {
-        MP.elimination(new Reponse(ouverture, rep));
-        List<String> choix = MP.choix();
-        int size = choix.size();
-
-        if (size == 1) {
-            lastProposition = choix.get(0);
-        } else {
-            int indice = choixEgaliter(size);
-            lastProposition = choix.get(indice - 1);
-            System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);
-        }
-        choixReponse2();
-    }
-
-    public void start3(String rep) {
         MP.elimination(new Reponse(lastProposition, rep));
-        if (MP.getMotsPossible().size() <= 1){
-            //message de fin
-            messageChannel.sendMessage("bravo").queue();
-
-
-        }else {
+        if (MP.getMotsPossible().size()>1){
             List<String> choix = MP.choix();
             int size = choix.size();
 
@@ -104,11 +84,13 @@ public class ApplicationMots {
                 lastProposition = choix.get(indice - 1);
                 System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);
             }
-            choixReponse2();
+            choixReponse();
+        } else {
+            //message fin
+            messageChannel.sendMessage("bravo").queue();
         }
-
-        //menu();
     }
+
 
 
     //while (MP.getMotsPossible().size() > 1) {
@@ -118,9 +100,6 @@ public class ApplicationMots {
         messageChannel.sendMessage("Game response :").queue(this::recupLastSaisie);
     }
 
-    private void choixReponse2() {
-        messageChannel.sendMessage("Game response :").queue(this::recupLastSaisie2);
-    }
 
     private void recupLastSaisie(Message message) {
         bot.getEventWaiter().waitForEvent(
@@ -148,31 +127,6 @@ public class ApplicationMots {
         );
     }
 
-    private void recupLastSaisie2(Message message) {
-        bot.getEventWaiter().waitForEvent(
-                MessageReceivedEvent.class,
-                e -> {
-                    if (e.getAuthor().isBot()) return false;
-                    String msg = e.getMessage().getContentRaw();
-                    System.out.println("caca");
-                    if (Reponse.verifRep(msg) && msg.length() == longeur && e.getChannel().getId().equals(messageChannel.getId())) { //On vérifie que le message est envoyé dans le bon salon
-                        return true;
-                    } else {
-                        messageChannel.sendMessage("Type only " + longeur + " values between 0 and 3 (see meaning at the beginning)").queue();
-                    }
-                    return false;
-                },
-                e -> {
-                    start3(e.getMessage().getContentRaw());
-
-                }
-                , 1, TimeUnit.MINUTES,
-                () -> {
-                    message.getChannel().sendMessage("You didn't respond in time!").queue();
-                }
-
-        );
-    }
 
 
     private int choixEgaliter(int size) {

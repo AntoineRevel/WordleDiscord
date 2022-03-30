@@ -18,7 +18,7 @@ public class Bot {
     }
 
     public void start() throws LoginException, InterruptedException {
-        JDABuilder.createDefault("OTU3MjM3ODU1MjEyNjgzMjk0.Yj73OQ.BRUXbb-dAU7QMsSR1S447U26aDo")
+        JDABuilder.createDefault("privateToken")
                 .addEventListeners(
                         new ButtumStart(this),
                         eventWaiter

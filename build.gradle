@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'com.antoinerevel'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://m2.chew.pro/snapshots" }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'//1.24.1
+    implementation("net.dv8tion:JDA:5.0.0-alpha.9")
+    implementation 'pw.chew:jda-chewtils:2.0-SNAPSHOT'
+}
+
+test {
+    useJUnitPlatform()
+}

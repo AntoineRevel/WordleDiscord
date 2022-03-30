@@ -64,29 +64,6 @@ public class MotsPossible {
         return possibiliter;
     }
 
-    public String premier() {
-        System.out.println("Il y a " + motsPossible.size() + " mots posible restants");
-        System.out.println(motsPossible);
-        List<HashMap<Character, Integer>> stat = new ArrayList<>(longueur);
-        for (int i = 0; i < longueur; i++) {
-            stat.add(new HashMap<>());
-            for (String mot : motsPossible) {
-                char c = mot.toCharArray()[i];
-                HashMap<Character, Integer> dic = stat.get(i);
-                if (!(dic.containsKey(c))) {
-                    dic.put(c, 1);
-                } else {
-                    dic.put(c, dic.get(c) + 1);
-                }
-            }
-        }
-        for (HashMap<Character, Integer> dic : stat) {
-            System.out.println(dic);
-        }
-
-
-        return null;
-    }
 
     public void elimination(Reponse reponse) {
         int avant = motsPossible.size();
@@ -94,11 +71,13 @@ public class MotsPossible {
         int mtm = motsPossible.size();
         int dif = avant - mtm;
         messageChannel.sendMessage("We had "+avant+" words and we eliminated "+GRAS+dif+GRAS+".").queue();
-        messageChannel.sendMessage("There are still " +mtm+" possible words.").queue();
-        if (motsPossible.size() == 1) {
+        if (mtm==1) {
             messageChannel.sendMessage(GRAS+motsPossible.get(0)+GRAS+ " is the word we're looking for!").queue();
+        } else if (mtm==0){
+            messageChannel.sendMessage("There is no more possible word, we had a problem sorry").queue();
+        } else {
+            messageChannel.sendMessage("There are still " +mtm+" possible words.").queue();
         }
-        //System.out.println(motsPossible);
     }
 
     private double proba(String mot, Reponse.Rep[] reponse) {
@@ -177,7 +156,7 @@ public class MotsPossible {
         int T = motsPossible.size();
         for (String str : motsPossible) {
             double E = calculEsperance(str);
-            messageChannel.sendMessage("[" + i + "/" + T + "] "+str + " with a score of : " + String.format("%.3f",E)).queue();
+            //messageChannel.sendMessage("[" + i + "/" + T + "] "+str + " with a score of : " + String.format("%.3f",E)).queue();
             i++;
             dic.put(str, E);
             double max = E;
