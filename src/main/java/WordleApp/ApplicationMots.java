@@ -4,14 +4,16 @@ import discordBot.Bot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static WordleApp.MotsPossible.GRAS;
 
 public class ApplicationMots {
     public final String ANSI_RESET = "**";
@@ -31,7 +33,6 @@ public class ApplicationMots {
     private final Bot bot;
     private final MessageChannel messageChannel;
     private final MotsPossible MP;
-    private String ouverture;
     private String lastProposition;
 
     private final Scanner saisieUtilisateur; //soon inutile
@@ -80,9 +81,13 @@ public class ApplicationMots {
             if (size == 1) {
                 lastProposition = choix.get(0);
             } else {
-                int indice = choixEgaliter(size);
+                choixprop(choix);
+                return;
+                /*int indice = 1choixEgaliter(size);
+
                 lastProposition = choix.get(indice - 1);
-                System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);
+
+                System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);*/
             }
             choixReponse();
         } else {
@@ -91,9 +96,29 @@ public class ApplicationMots {
         }
     }
 
+    private void choixprop(List<String> choix){
+        String propFinal="";
+        Collection<Button> listButtum=new ArrayList<>();
+        Collection<Button> listButtumOff=new ArrayList<>();
+        for (String prop:choix){
+            listButtum.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop));
+            listButtumOff.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop).asDisabled());
+        }
+        messageChannel.sendMessage("Choose one.").setActionRow(listButtum).queue();
+        bot.getEventWaiter().waitForEvent(
+                ButtonInteractionEvent.class,
+                buttonInteractionEvent -> buttonInteractionEvent.getComponentId().contains("choix:"),
+                e->{
+                    e.editMessage(e.getMessage()).setActionRow(listButtumOff).queue();
+                    lastProposition=e.getInteraction().getComponentId().substring(6);
+                    messageChannel.sendMessage("> "+GRAS+ lastProposition+GRAS).queue();
+                    choixReponse();
 
+                },1,TimeUnit.MINUTES,
+                () -> messageChannel.sendMessage("You didn't respond in time!").queue()
+        );
+    }
 
-    //while (MP.getMotsPossible().size() > 1) {
 
 
     private void choixReponse() {
@@ -114,15 +139,9 @@ public class ApplicationMots {
                     }
                     return false;
                 },
-                e -> {
-                    start2(e.getMessage().getContentRaw());
-
-
-                }
+                e -> start2(e.getMessage().getContentRaw())
                 , 1, TimeUnit.MINUTES,
-                () -> {
-                    message.getChannel().sendMessage("You didn't respond in time!").queue();
-                }
+                () -> message.getChannel().sendMessage("You didn't respond in time!").queue()
 
         );
     }

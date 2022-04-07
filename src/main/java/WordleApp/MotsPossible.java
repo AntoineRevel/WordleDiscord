@@ -150,7 +150,7 @@ public class MotsPossible {
 
     public List<String> choix() {
         List<String> listMeilleur = new ArrayList<>();
-        double con = 0;
+        double esp = 0;
         HashMap<String, Double> dic = new HashMap<>();
         int i = 1;
         int T = motsPossible.size();
@@ -159,31 +159,24 @@ public class MotsPossible {
             //messageChannel.sendMessage("[" + i + "/" + T + "] "+str + " with a score of : " + String.format("%.3f",E)).queue();
             i++;
             dic.put(str, E);
-            double max = E;
-            if (con < max) {
-                con = max;
+            if (esp < E) {
+                esp = E;
             }
         }
 
         for (Map.Entry<String, Double> e : dic.entrySet()) {
-            if (e.getValue() == con) {
+            if (e.getValue() == esp) {
                 listMeilleur.add(e.getKey());
             }
 
         }
         if (listMeilleur.size() == 1) {
-            System.out.print("La meilleure proposition est ");
             messageChannel.sendMessage("The best entry is :").queue();
             messageChannel.sendMessage("> "+GRAS+ listMeilleur.get(0)+GRAS).queue();
-            //System.out.print(ANSI_RED + listMeilleur.get(0) + " " + ANSI_RESET);
+            messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%.1f", esp) + GRAS + " words removed.").queue();
         } else {
-            System.out.println("Les mots qui retirent le plus sont : "); //faire bouton choix
-            for (int j = 0; j < listMeilleur.size(); j++) {
-                System.out.println((j + 1) + "- " + listMeilleur.get(j));
-            }
+            messageChannel.sendMessage("Each of them has an expectation of " + GRAS + String.format("%(,.1f", esp) + GRAS +" words removed.").queue();
         }
-        double esp =  con;
-        messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%.3f", esp) + GRAS + " words eliminated.").queue();
         return listMeilleur;
     }
 

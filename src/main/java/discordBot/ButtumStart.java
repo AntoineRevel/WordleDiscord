@@ -78,7 +78,6 @@ public class ButtumStart extends ListenerAdapter {
                 language = "french";
                 menu(event);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + id);
         }
 
     }
@@ -115,9 +114,7 @@ public class ButtumStart extends ListenerAdapter {
                     ).queue();
                 }
                 , 1, TimeUnit.MINUTES,
-                () -> {
-                    interactionHook.getInteraction().getMessageChannel().sendMessage("You didn't respond in time!").queue();
-                }
+                () -> interactionHook.getInteraction().getMessageChannel().sendMessage("You didn't respond in time!").queue()
 
         );
     }
