@@ -170,12 +170,13 @@ public class MotsPossible {
             }
 
         }
-        if (listMeilleur.size() == 1) {
+        int nb =listMeilleur.size();
+        if (nb == 1) {
             messageChannel.sendMessage("The best entry is :").queue();
             messageChannel.sendMessage("> "+GRAS+ listMeilleur.get(0)+GRAS).queue();
             messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
         } else {
-            messageChannel.sendMessage("Each of them has an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS +" words removed.").queue();
+            messageChannel.sendMessage("Of which "+ nb+" have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS +" words removed.").queue();
         }
         return listMeilleur;
     }
