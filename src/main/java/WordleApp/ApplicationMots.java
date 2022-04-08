@@ -138,9 +138,9 @@ public class ApplicationMots {
         bot.getEventWaiter().waitForEvent(
                 MessageReceivedEvent.class,
                 e -> {
-                    if (e.getAuthor().isBot()) return false;
+                    if (e.getAuthor().isBot() || !e.getChannel().getId().equals(messageChannel.getId())) return false;
                     String msg = e.getMessage().getContentRaw();
-                    if (Reponse.verifRep(msg) && msg.length() == longeur && e.getChannel().getId().equals(messageChannel.getId())) { //On vérifie que le message est envoyé dans le bon salon
+                    if (Reponse.verifRep(msg) && msg.length() == longeur) {
                         return true;
                     } else {
                         messageChannel.sendMessage("Type only " + longeur + " values between 0 and 3 (see meaning at the beginning)").queue();

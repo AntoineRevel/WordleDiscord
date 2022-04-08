@@ -105,7 +105,7 @@ public class ButtumStart extends ListenerAdapter {
         bot.getEventWaiter().waitForEvent(
                 MessageReceivedEvent.class,
                 e -> {
-                    if (e.getAuthor().isBot()) return false;
+                    if (e.getAuthor().isBot() || !e.getChannel().getId().equals(interactionHook.getInteraction().getChannel().getId())) return false;
                     try {
                         int i = Integer.parseInt(e.getMessage().getContentRaw());
                         if (i > 15) {
