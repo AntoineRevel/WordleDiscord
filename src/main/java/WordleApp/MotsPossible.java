@@ -70,13 +70,14 @@ public class MotsPossible {
         this.motsPossible = elimine(reponse);
         int mtm = motsPossible.size();
         int dif = avant - mtm;
-        messageChannel.sendMessage("We had "+avant+" words and we eliminated "+GRAS+dif+GRAS+".").queue();
+
         if (mtm==1) {
-            messageChannel.sendMessage(GRAS+motsPossible.get(0)+GRAS+ " is the word we're looking for!").queue();
+            messageChannel.sendMessage("Congratulations! The word we are looking for is :").queue();
+            messageChannel.sendMessage("> "+GRAS+motsPossible.get(0)+GRAS).queue();
         } else if (mtm==0){
-            messageChannel.sendMessage("There is no more possible word, we had a problem sorry").queue();
+            messageChannel.sendMessage("There is no more possible word, we had a problem sorry").queue(); //exit
         } else {
-            messageChannel.sendMessage("There are still " +mtm+" possible words.").queue();
+            messageChannel.sendMessage(GRAS+dif+GRAS+" words were removed, there are still " +mtm+" possible words.").queue();
         }
     }
 
@@ -144,7 +145,6 @@ public class MotsPossible {
         for (Reponse.Rep[] rep : possibiliter) {
             Esperance = Esperance + proba(mot, rep);
         }
-        //System.out.print("somme= "+div);
         return Esperance / div;
     }
 
@@ -173,9 +173,9 @@ public class MotsPossible {
         if (listMeilleur.size() == 1) {
             messageChannel.sendMessage("The best entry is :").queue();
             messageChannel.sendMessage("> "+GRAS+ listMeilleur.get(0)+GRAS).queue();
-            messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%.1f", esp) + GRAS + " words removed.").queue();
+            messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
         } else {
-            messageChannel.sendMessage("Each of them has an expectation of " + GRAS + String.format("%(,.1f", esp) + GRAS +" words removed.").queue();
+            messageChannel.sendMessage("Each of them has an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS +" words removed.").queue();
         }
         return listMeilleur;
     }

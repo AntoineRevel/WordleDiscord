@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ButtumStart extends ListenerAdapter {
     private final Bot bot;
+    public static final String code="Mot";
 
     private String language = "english";
     private int size = 5;
@@ -36,9 +37,9 @@ public class ButtumStart extends ListenerAdapter {
         User author = event.getAuthor();
 
         if (author.isBot()) return;
-        if (msg.equalsIgnoreCase("Mot") && partieEnCour){
+        if (msg.equalsIgnoreCase(code) && partieEnCour){
             event.getChannel().sendMessage("A session is already in progress.").queue();
-        } else if (msg.equalsIgnoreCase("Mot")){
+        } else if (msg.equalsIgnoreCase(code)){
             partieEnCour=true;
             tc.sendMessage("Hello " + author.getName() + ". " + getPhraseMenu())
                     .setActionRow( // Add our Buttons (max 5 per ActionRow)
@@ -61,6 +62,7 @@ public class ButtumStart extends ListenerAdapter {
                             Button.of(ButtonStyle.PRIMARY, "menu:language", "Language", Emoji.fromUnicode("\uD83D\uDE03")).asDisabled(),     //
                             Button.of(ButtonStyle.PRIMARY, "menu:lettres", "Number of letters", Emoji.fromUnicode("\uD83D\uDD24")).asDisabled() // 🔤
                     ).queue(this::startParty);
+
             case "menu:language" -> event.editMessage("Choice of the language of the words to use.").setActionRow(
                     Button.of(ButtonStyle.SECONDARY, "language:en", "English", Emoji.fromUnicode("\uD83C\uDDFA\uD83C\uDDF8")),//
                     Button.of(ButtonStyle.SECONDARY, "language:fr", "French", Emoji.fromUnicode("\uD83C\uDDEB\uD83C\uDDF7")) //🇫🇷
@@ -83,8 +85,20 @@ public class ButtumStart extends ListenerAdapter {
     }
 
     private void startParty(InteractionHook interactionHook){
-        ApplicationMots am=new ApplicationMots(language,size,bot,interactionHook);
+        ApplicationMots am=new ApplicationMots(this,interactionHook);
         am.start();
+    }
+
+    public Bot getBot() {
+        return bot;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     private void entreLettre(InteractionHook interactionHook) {
@@ -127,5 +141,7 @@ public class ButtumStart extends ListenerAdapter {
         ).queue();
     }
 
-
+    public void setPartieEnCour(boolean partieEnCour) {
+        this.partieEnCour = partieEnCour;
+    }
 }

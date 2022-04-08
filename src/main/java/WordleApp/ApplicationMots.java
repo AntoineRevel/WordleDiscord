@@ -1,6 +1,7 @@
 package WordleApp;
 
 import discordBot.Bot;
+import discordBot.ButtumStart;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static WordleApp.MotsPossible.GRAS;
+import static discordBot.ButtumStart.code;
 
 public class ApplicationMots {
     public final String ANSI_RESET = "**";
@@ -34,10 +36,11 @@ public class ApplicationMots {
     private final MessageChannel messageChannel;
     private final MotsPossible MP;
     private String lastProposition;
+    private final ButtumStart bs;
 
-    private final Scanner saisieUtilisateur; //soon inutile
 
-    public ApplicationMots(String langue, int longeur, Bot bot, InteractionHook ih) {
+    public ApplicationMots(ButtumStart bs, InteractionHook ih) {
+        String langue=bs.getLanguage();
         if (langue.equals("french")) {
             this.langue = cheminFR;
         } else if (langue.equals("english")) {
@@ -45,10 +48,10 @@ public class ApplicationMots {
         } else {
             throw new RuntimeException("Langue inconnu " + langue);
         }
-        this.longeur = longeur;
-        this.bot = bot;
+        this.longeur = bs.getSize();
+        this.bot = bs.getBot();
         this.messageChannel = ih.getInteraction().getMessageChannel();
-        this.saisieUtilisateur = new Scanner(System.in);
+        this.bs=bs;
 
         MP = new MotsPossible(longeur, this.langue, messageChannel);
 
@@ -92,12 +95,12 @@ public class ApplicationMots {
             choixReponse();
         } else {
             //message fin
-            messageChannel.sendMessage("bravo").queue();
+            messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
+            bs.setPartieEnCour(false);
         }
     }
 
     private void choixprop(List<String> choix){
-        String propFinal="";
         Collection<Button> listButtum=new ArrayList<>();
         Collection<Button> listButtumOff=new ArrayList<>();
         for (String prop:choix){
@@ -146,26 +149,6 @@ public class ApplicationMots {
         );
     }
 
-
-
-    private int choixEgaliter(int size) {
-        int indice;
-        try {
-            System.out.print("Choix : ");
-            indice = saisieUtilisateur.nextInt();
-            if (indice > size) {
-                System.out.println("Entrez un entier entre 1 et " + size);
-                return choixEgaliter(size);
-            }
-            return indice;
-        } catch (InputMismatchException exception) {
-            System.out.println("Entrez un entier entre 1 et " + size);
-            saisieUtilisateur.next();
-            return choixEgaliter(size);
-
-        }
-
-    }
 
 
     private String ouverture(MotsPossible MP) {
