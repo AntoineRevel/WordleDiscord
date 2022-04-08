@@ -14,13 +14,10 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static WordleApp.MotsPossible.GRAS;
 import static discordBot.ButtumStart.code;
 
 public class ApplicationMots {
-    public final String ANSI_RESET = "**";
-    public final String ANSI_RED = "**";
-    public final String ANSI_gras = "**";
+    public final String GRAS = "**";
 
     public final String cheminFR = "src/main/java/WordleApp/ressources/motsFR.txt";
     public final String cheminAn = "src/main/java/WordleApp/ressources/mots.txt";
@@ -94,10 +91,14 @@ public class ApplicationMots {
             }
             choixReponse();
         } else {
-            //message fin
-            messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
-            bs.setPartieEnCour(false);
+            finPartie();
         }
+    }
+
+    private void finPartie(){
+        messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
+        bs.setPartieEnCour(false);
+        System.out.println(java.time.LocalDate.now()+" "+java.time.LocalTime.now()+ " : "+messageChannel.getName());
     }
 
     private void choixprop(List<String> choix){
@@ -114,11 +115,15 @@ public class ApplicationMots {
                 e->{
                     e.editMessage(e.getMessage()).setActionRow(listButtumOff).queue();
                     lastProposition=e.getInteraction().getComponentId().substring(6);
-                    messageChannel.sendMessage("> "+GRAS+ lastProposition+GRAS).queue();
+                    messageChannel.sendMessage("> "+ MotsPossible.GRAS + lastProposition+ MotsPossible.GRAS).queue();
                     choixReponse();
 
                 },1,TimeUnit.MINUTES,
-                () -> messageChannel.sendMessage("You didn't respond in time!").queue()
+                () -> {
+                    messageChannel.sendMessage("You didn't respond in time!").queue();
+                    finPartie();
+                }
+
         );
     }
 
@@ -144,7 +149,10 @@ public class ApplicationMots {
                 },
                 e -> start2(e.getMessage().getContentRaw())
                 , 1, TimeUnit.MINUTES,
-                () -> message.getChannel().sendMessage("You didn't respond in time!").queue()
+                () -> {
+                    message.getChannel().sendMessage("You didn't respond in time!").queue();
+                    finPartie();
+                }
 
         );
     }
@@ -154,16 +162,16 @@ public class ApplicationMots {
     private String ouverture(MotsPossible MP) {
         HashMap<Integer, String> bestOuverture = new HashMap<>();
         if (langue.equals(cheminAn)) {
-            bestOuverture.put(2, "ho" + ANSI_RESET + " with an expected value of " + ANSI_gras + "27.489");
-            bestOuverture.put(3, "eat" + ANSI_RESET + " with an expected value of " + ANSI_gras + "462.316");
-            bestOuverture.put(4, "sale" + ANSI_RESET + " with an expected value of " + ANSI_gras + "2146.642");
-            bestOuverture.put(5, "tares" + ANSI_RESET + " with an expected value of " + ANSI_gras + "4175.682");
+            bestOuverture.put(2, "ho" + GRAS + " with an expected value of " + GRAS + "27.489");
+            bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.316");
+            bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.642");
+            bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.682");
         }
 
         if (langue.equals(cheminFR)) {
-            bestOuverture.put(2, "au" + ANSI_RESET + " with an expected value of " + ANSI_gras + "48,374");
-            bestOuverture.put(3, "aie" + ANSI_RESET + " with an expected value of " + ANSI_gras + "374,294");
-            bestOuverture.put(4, "taie" + ANSI_RESET + " with an expected value of " + ANSI_gras + "1929,883");
+            bestOuverture.put(2, "au" + GRAS + " with an expected value of " + GRAS + "48,374");
+            bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "374,294");
+            bestOuverture.put(4, "taie" + GRAS + " with an expected value of " + GRAS + "1929,883");
 
         }
         int longeur = MP.getLongueur();
@@ -171,18 +179,21 @@ public class ApplicationMots {
         if (bestOuverture.containsKey(longeur)) {
             prop = bestOuverture.get(longeur);
             messageChannel.sendMessage("Best opening : ").queue();
-            messageChannel.sendMessage("> " + ANSI_RED + prop + ANSI_RESET + " eliminated words .").queue();
+            messageChannel.sendMessage("> " + GRAS + prop + GRAS + " eliminated words.").queue();
             return prop.substring(0, longeur);
         }
         prop = MP.random();
         if (longeur == 6) {
-            System.out.println("Calculation of the expectation...");
-            messageChannel.sendMessage("Calculation of the expectation...").queue();
             messageChannel.sendMessage("Proposal of a random opening :").queue();
-            messageChannel.sendMessage("> " + ANSI_RED + prop + ANSI_RESET + " with an expected value of " + ANSI_gras + String.format("%.3f", MP.calculEsperance(prop)) + ANSI_RESET + " mots éliminé.").queue();
+            messageChannel.sendMessage("> " + MotsPossible.GRAS + prop + MotsPossible.GRAS).queue();
+            messageChannel.sendMessage("Calculation of the expectation...").queue();
+            messageChannel.sendMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(prop)) + GRAS + " eliminated words.").queue();
+
+
+
         } else {
             messageChannel.sendMessage("Proposal of a random opening :").queue();
-            messageChannel.sendMessage("> " + ANSI_RED + prop + ANSI_RESET).queue();
+            messageChannel.sendMessage("> " + GRAS + prop + GRAS).queue();
         }
         //System.out.println(prop);
         return prop;
