@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -73,8 +74,8 @@ public class ApplicationMots {
     }
 
     public void start2(String rep) {
-        MP.elimination(new Reponse(lastProposition, rep));
-        if (MP.getMotsPossible().size()>1){
+        int sizeMP= MP.elimination(new Reponse(lastProposition, rep));
+        if (sizeMP>1){
             List<String> choix = MP.choix();
             int size = choix.size();
 
@@ -90,16 +91,17 @@ public class ApplicationMots {
                 System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);*/
             }
             choixReponse();
+        } else if (sizeMP==1){
+            System.out.println(finPartie()+ " Success !");
         } else {
-            finPartie();
-            System.out.print(" Success !");
+            System.out.println(finPartie()+ " Échec !");
         }
     }
 
-    private void finPartie(){
+    private String finPartie(){
         messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
         bs.setPartieEnCour(false);
-        System.out.println(java.time.LocalDate.now()+" "+java.time.LocalTime.now()+ " : "+messageChannel.getName());
+        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) +"|"+messageChannel.getName();
     }
 
     private void choixprop(List<String> choix){
@@ -122,7 +124,7 @@ public class ApplicationMots {
                 },1,TimeUnit.MINUTES,
                 () -> {
                     messageChannel.sendMessage("You didn't respond in time!").queue();
-                    finPartie();
+                    System.out.println(finPartie()+ " Time out");
                 }
 
         );
@@ -152,7 +154,7 @@ public class ApplicationMots {
                 , 1, TimeUnit.MINUTES,
                 () -> {
                     message.getChannel().sendMessage("You didn't respond in time!").queue();
-                    finPartie();
+                    System.out.println(finPartie()+ " Time out");
                 }
 
         );

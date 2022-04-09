@@ -70,7 +70,7 @@ public class MotsPossible {
     }
 
 
-    public void elimination(Reponse reponse) {
+    public int elimination(Reponse reponse) {
         int avant = motsPossible.size();
         this.motsPossible = elimine(reponse);
         int mtm = motsPossible.size();
@@ -84,6 +84,7 @@ public class MotsPossible {
         } else {
             messageChannel.sendMessage(GRAS+dif+GRAS+" words were removed, there are still " +mtm+" possible words.").queue();
         }
+        return mtm;
     }
 
     private double proba(String mot, Reponse.Rep[] reponse) {
@@ -117,7 +118,7 @@ public class MotsPossible {
                 }
             } else if (rep == Reponse.Rep.WrongSpot) {
                 for (String str : motsPossible) {
-                    if (!(str.contains(String.valueOf(c)))) {
+                    if (str.indexOf(c)==-1) {
                         newMotsPossible.remove(str);
                     }
                     for (int index = str.indexOf(c);
