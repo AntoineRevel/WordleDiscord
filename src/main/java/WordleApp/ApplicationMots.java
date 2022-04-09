@@ -92,6 +92,7 @@ public class ApplicationMots {
             choixReponse();
         } else {
             finPartie();
+            System.out.print(" Success !");
         }
     }
 
@@ -143,7 +144,7 @@ public class ApplicationMots {
                     if (Reponse.verifRep(msg) && msg.length() == longeur) {
                         return true;
                     } else {
-                        messageChannel.sendMessage("Type only " + longeur + " values between 0 and 3 (see meaning at the beginning)").queue();
+                        messageChannel.sendMessage("Type only " + longeur + " values between 0 and 2 (see meaning at the beginning)").queue();
                     }
                     return false;
                 },
@@ -174,7 +175,7 @@ public class ApplicationMots {
             bestOuverture.put(4, "taie" + GRAS + " with an expected value of " + GRAS + "1929,883");
 
         }
-        int longeur = MP.getLongueur();
+        int longeur = MP.getSize();
         String prop;
         if (bestOuverture.containsKey(longeur)) {
             prop = bestOuverture.get(longeur);

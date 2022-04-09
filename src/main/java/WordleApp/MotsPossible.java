@@ -1,16 +1,19 @@
 package WordleApp;
 
-import discordBot.Bot;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MotsPossible {
 
     public static final String GRAS = "**";
 
-    private final int longueur;
+    private final int size;
     private final List<Reponse.Rep[]> possibiliter;
     private List<String> motsPossible;
 
@@ -20,11 +23,13 @@ public class MotsPossible {
     private int div;
 
 
-    public MotsPossible(int longueur, String langue, MessageChannel messageChannel) {
-        File doc = new File(langue);
-        Mots mots = new Mots(doc);
-        this.longueur = longueur;
-        motsPossible = mots.motsde(longueur);
+    public MotsPossible(int size, String langue, MessageChannel messageChannel) {
+        this.size = size;
+        try {
+            motsPossible = Files.lines(Paths.get(langue)).filter(mot->mot.length()==size).collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.possibiliter = possibiliter();
         this.messageChannel=messageChannel;
     }
@@ -44,11 +49,11 @@ public class MotsPossible {
         List<Reponse.Rep[]> possibiliter;
         List<Reponse.Rep[]> possibiliterMem = new ArrayList<>();
         for (Reponse.Rep rep : Reponse.Rep.values()) {
-            Reponse.Rep[] tab = new Reponse.Rep[longueur];
+            Reponse.Rep[] tab = new Reponse.Rep[size];
             tab[0] = rep;
             possibiliterMem.add(tab);
         }
-        for (int i = 1; i < longueur; i++) {
+        for (int i = 1; i < size; i++) {
             possibiliter = new ArrayList<>();
             for (Reponse.Rep[] tab : possibiliterMem) {
                 for (Reponse.Rep rep : Reponse.Rep.values()) {
@@ -95,13 +100,13 @@ public class MotsPossible {
     private List<String> elimine(Reponse reponse) {
         List<String> newMotsPossible = new ArrayList<>(motsPossible);
         List<Character> letresPresente = new ArrayList<>();
-        for (int i = 0; i < longueur; i++) {
+        for (int i = 0; i < size; i++) {
             Reponse.Rep rep = reponse.getReponse(i);
             char c = reponse.getProposition(i);
             if (rep == Reponse.Rep.Correct || rep == Reponse.Rep.WrongSpot) letresPresente.add(c);
         }
 
-        for (int i = 0; i < longueur; i++) {
+        for (int i = 0; i < size; i++) {
             Reponse.Rep rep = reponse.getReponse(i);
             char c = reponse.getProposition(i);
             if (rep == Reponse.Rep.Correct) {
@@ -186,8 +191,8 @@ public class MotsPossible {
         //return "chugs";
     }
 
-    public int getLongueur() {
-        return longueur;
+    public int getSize() {
+        return size;
     }
 
     public List<String> getMotsPossible() {
