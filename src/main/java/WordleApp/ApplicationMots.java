@@ -69,14 +69,26 @@ public class ApplicationMots {
 
     public void start() {
         afficheRegle();
+        long startTime;
+        long stopTime;
+        startTime = System.nanoTime();
         lastProposition = ouverture(MP);
+        stopTime=System.nanoTime();
+        messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
         choixReponse();
     }
 
     public void start2(String rep) {
+        long startTime;
+        long stopTime;
+        startTime = System.nanoTime();
         int sizeMP= MP.elimination(new Reponse(lastProposition, rep));
+        stopTime=System.nanoTime();
+        messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
         if (sizeMP>1){
             List<String> choix = MP.choix();
+            stopTime=System.nanoTime();
+            messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
             int size = choix.size();
 
             if (size == 1) {
@@ -92,26 +104,29 @@ public class ApplicationMots {
             }
             choixReponse();
         } else if (sizeMP==1){
-            System.out.println(finPartie()+ " Success !");
+            System.out.println(finPartie()+ "Success!");
         } else {
-            System.out.println(finPartie()+ " Échec !");
+            System.out.println(finPartie()+ "Échec!");
         }
     }
 
     private String finPartie(){
         messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
         bs.setPartieEnCour(false);
-        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) +"|"+messageChannel.getName();
+        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) +" | "+messageChannel.getName() +" -> ";
     }
 
     private void choixprop(List<String> choix){
-        Collection<Button> listButtum=new ArrayList<>();
-        Collection<Button> listButtumOff=new ArrayList<>();
-        for (String prop:choix){
+        List<Button> listButtum=new ArrayList<>();
+        List<Button> listButtumOff=new ArrayList<>();
+
+        for (int i=0;i<choix.size() && i<5;i++){
+            String prop=choix.get(i);
             listButtum.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop));
             listButtumOff.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop).asDisabled());
         }
-        messageChannel.sendMessage("Choose one.").setActionRow(listButtum).queue();
+
+        messageChannel.sendMessage("Choose one of these "+listButtum.size()+" :").setActionRow(listButtum).queue();
         bot.getEventWaiter().waitForEvent(
                 ButtonInteractionEvent.class,
                 buttonInteractionEvent -> buttonInteractionEvent.getComponentId().contains("choix:"),
@@ -165,10 +180,10 @@ public class ApplicationMots {
     private String ouverture(MotsPossible MP) {
         HashMap<Integer, String> bestOuverture = new HashMap<>();
         if (langue.equals(cheminAn)) {
-            bestOuverture.put(2, "ho" + GRAS + " with an expected value of " + GRAS + "27.489");
-            bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.316");
-            bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.642");
-            bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.682");
+            bestOuverture.put(2, "ho" + GRAS + " with an expected value of " + GRAS + "27.5");
+            bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.3");
+            bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.6");
+            bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.6");
         }
 
         if (langue.equals(cheminFR)) {
@@ -180,10 +195,12 @@ public class ApplicationMots {
         int longeur = MP.getSize();
         String prop;
         if (bestOuverture.containsKey(longeur)) {
-            prop = bestOuverture.get(longeur);
+            String longProp=bestOuverture.get(longeur);
+            prop = longProp.substring(0, longeur);
             messageChannel.sendMessage("Best opening : ").queue();
-            messageChannel.sendMessage("> " + GRAS + prop + GRAS + " eliminated words.").queue();
-            return prop.substring(0, longeur);
+            messageChannel.sendMessage("> " + GRAS + prop + GRAS ).queue();
+            messageChannel.sendMessage(longProp.substring(longeur+2) +GRAS+" eliminated words.").queue();
+            return prop;
         }
         prop = MP.random();
         if (longeur == 6) {
