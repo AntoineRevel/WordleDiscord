@@ -154,15 +154,17 @@ public class MotsPossible {
         HashMap<String, Double> dic = new HashMap<>();
         int i = 1;
         int T = all.size();
+        messageChannel.sendMessage("Calculation...").queue();
         for (String str : all) {
             double E = calculEsperance(str);
-            System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
+            //System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
             i++;
             dic.put(str, E);
             if (esp < E) {
                 esp = E;
             }
         }
+
 
         for (Map.Entry<String, Double> e : dic.entrySet()) {
             if (e.getValue() == esp) {
