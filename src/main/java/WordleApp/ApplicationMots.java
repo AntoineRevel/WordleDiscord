@@ -69,26 +69,14 @@ public class ApplicationMots {
 
     public void start() {
         afficheRegle();
-        long startTime;
-        long stopTime;
-        startTime = System.nanoTime();
         lastProposition = ouverture(MP);
-        stopTime=System.nanoTime();
-        messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
         choixReponse();
     }
 
     public void start2(String rep) {
-        long startTime;
-        long stopTime;
-        startTime = System.nanoTime();
         int sizeMP= MP.elimination(new Reponse(lastProposition, rep));
-        stopTime=System.nanoTime();
-        messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
         if (sizeMP>1){
             List<String> choix = MP.choix();
-            stopTime=System.nanoTime();
-            messageChannel.sendMessage("vieux :"+(stopTime-startTime)).queue();
             int size = choix.size();
 
             if (size == 1) {
@@ -125,6 +113,7 @@ public class ApplicationMots {
             listButtum.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop));
             listButtumOff.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop).asDisabled());
         }
+
 
         messageChannel.sendMessage("Choose one of these "+listButtum.size()+" :").setActionRow(listButtum).queue();
         bot.getEventWaiter().waitForEvent(

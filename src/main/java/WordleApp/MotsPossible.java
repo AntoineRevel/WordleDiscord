@@ -2,11 +2,12 @@ package WordleApp;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class MotsPossible {
@@ -15,6 +16,7 @@ public class MotsPossible {
 
     private final int size;
     private final List<Reponse.Rep[]> possibiliter;
+    private final List<String> all;
     private List<String> motsPossible;
 
     private final MessageChannel messageChannel;
@@ -24,14 +26,19 @@ public class MotsPossible {
 
 
     public MotsPossible(int size, String langue, MessageChannel messageChannel) {
+        List<String> all1;
         this.size = size;
+        ;
         try {
-            motsPossible = Files.lines(Paths.get(langue)).filter(mot->mot.length()==size).collect(Collectors.toList());
+            all1 = Files.lines(Paths.get(langue)).filter(mot -> mot.length() == size).collect(Collectors.toList());
+            motsPossible = all1;
         } catch (IOException e) {
             e.printStackTrace();
+            all1 = null;
         }
+        all = all1;
         this.possibiliter = possibiliter();
-        this.messageChannel=messageChannel;
+        this.messageChannel = messageChannel;
     }
 
 
@@ -76,13 +83,13 @@ public class MotsPossible {
         int mtm = motsPossible.size();
         int dif = avant - mtm;
 
-        if (mtm==1) {
+        if (mtm == 1) {
             messageChannel.sendMessage("Congratulations! The word we are looking for is :").queue();
-            messageChannel.sendMessage("> "+GRAS+motsPossible.get(0)+GRAS).queue();
-        } else if (mtm==0){
+            messageChannel.sendMessage("> " + GRAS + motsPossible.get(0) + GRAS).queue();
+        } else if (mtm == 0) {
             messageChannel.sendMessage("There is no more possible word, we had a problem sorry").queue(); //exit
         } else {
-            messageChannel.sendMessage(GRAS+dif+GRAS+" words were removed, there are still " +mtm+" possible words.").queue();
+            messageChannel.sendMessage(GRAS + dif + GRAS + " words were removed, there are still " + mtm + " possible words.").queue();
         }
         return mtm;
     }
@@ -91,15 +98,12 @@ public class MotsPossible {
         int probaXsize = elimine(new Reponse(mot, reponse)).size();
         int nbElimination = motsPossible.size() - probaXsize;
         int mult = probaXsize * nbElimination;
-        //if(mult!=0) div=div+nbElimination;
         div = div + probaXsize;
-        //System.out.print(mult+"="+probaXsize+"*"+nbElimination+",");
 
         return mult;
     }
 
     private List<String> elimine(Reponse reponse) {
-        List<String> newMotsPossible = new ArrayList<>(motsPossible);
         List<Character> letresPresente = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Reponse.Rep rep = reponse.getReponse(i);
@@ -107,43 +111,33 @@ public class MotsPossible {
             if (rep == Reponse.Rep.Correct || rep == Reponse.Rep.WrongSpot) letresPresente.add(c);
         }
 
-        for (int i = 0; i < size; i++) {
-            Reponse.Rep rep = reponse.getReponse(i);
-            char c = reponse.getProposition(i);
-            if (rep == Reponse.Rep.Correct) {
-                for (String str : motsPossible) {
-                    if (str.charAt(i) != c) {
-                        newMotsPossible.remove(str);
-                    }
-                }
-            } else if (rep == Reponse.Rep.WrongSpot) {
-                for (String str : motsPossible) {
-                    if (str.indexOf(c)==-1) {
-                        newMotsPossible.remove(str);
-                    }
-                    for (int index = str.indexOf(c);
-                         index >= 0;
-                         index = str.indexOf(c, index + 1)) {
-                        if (index == i) {
-                            newMotsPossible.remove(str);
-                        }
-                    }
-                }
-            } else if (rep == Reponse.Rep.NotInTheWorld) {
-                for (String str : motsPossible) {
-                    if (countOccurences(str, c, 0) > Collections.frequency(letresPresente, c)) {
-                        newMotsPossible.remove(str);
-
-                    }
-                }
+        class LocalCollector {
+            private Collector<String, ?, List<String>> getCollector(int i) {
+                if (i == size) return Collectors.toList();
+                else return Collectors.filtering(getPredicate(i), getCollector(i + 1));
             }
 
-
+            private Predicate<String> getPredicate(int i) {
+                Reponse.Rep rep = reponse.getReponse(i);
+                char c = reponse.getProposition(i);
+                return mot -> {
+                    if (rep == Reponse.Rep.Correct) {
+                        if (mot.charAt(i) != c) return false;
+                    } else if (rep == Reponse.Rep.WrongSpot) {
+                        int index = mot.indexOf(c);
+                        if (index == -1) return false;
+                        for (; index >= 0; index = mot.indexOf(c, index + 1)) {
+                            if (index == i) return false;
+                        }
+                    } else if (mot.chars().filter(ch -> ch == c).count() > Collections.frequency(letresPresente, c))
+                        return false;
+                    return true;
+                };
+            }
         }
-
-        return newMotsPossible;
-
+        return motsPossible.stream().collect(new LocalCollector().getCollector(0));
     }
+
 
     public double calculEsperance(String mot) {
         double Esperance = 0;
@@ -159,10 +153,10 @@ public class MotsPossible {
         double esp = 0;
         HashMap<String, Double> dic = new HashMap<>();
         int i = 1;
-        int T = motsPossible.size();
-        for (String str : motsPossible) {
+        int T = all.size();
+        for (String str : all) {
             double E = calculEsperance(str);
-            //messageChannel.sendMessage("[" + i + "/" + T + "] "+str + " with a score of : " + String.format("%.3f",E)).queue();
+            System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
             i++;
             dic.put(str, E);
             if (esp < E) {
@@ -176,14 +170,26 @@ public class MotsPossible {
             }
 
         }
-        int nb =listMeilleur.size();
+        int nb = listMeilleur.size();
         if (nb == 1) {
+            String bestEntry = listMeilleur.get(0);
+
+            if (motsPossible.contains(bestEntry)) {
+                messageChannel.sendMessage("Maybe the right one !").queue();
+            } else {
+                messageChannel.sendMessage("To eliminate as many possibilities!").queue();
+            }
             messageChannel.sendMessage("The best entry is :").queue();
-            messageChannel.sendMessage("> "+GRAS+ listMeilleur.get(0)+GRAS).queue();
+            messageChannel.sendMessage("> " + GRAS + bestEntry + GRAS).queue();
             messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
         } else {
-            messageChannel.sendMessage("Of which "+ nb+" have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS +" words removed.").queue();
+            messageChannel.sendMessage(nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
+            List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
+            if (toptop.size() > 0) {
+                System.out.println("oui");
+            }
         }
+
         return listMeilleur;
     }
 
