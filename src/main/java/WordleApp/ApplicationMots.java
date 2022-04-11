@@ -195,10 +195,8 @@ public class ApplicationMots {
         if (longeur == 6) {
             messageChannel.sendMessage("Proposal of a random opening :").queue();
             messageChannel.sendMessage("> " + MotsPossible.GRAS + prop + MotsPossible.GRAS).queue();
-            messageChannel.sendMessage("Calculation of the expectation...").queue();
-            messageChannel.sendMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(prop)) + GRAS + " eliminated words.").queue();
-
-
+            messageChannel.sendMessage("Calculation of the expectation...").queue(message ->
+                    message.editMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(prop)) + GRAS + " eliminated words.").queue());
 
         } else {
             messageChannel.sendMessage("Proposal of a random opening :").queue();

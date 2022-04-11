@@ -28,7 +28,6 @@ public class MotsPossible {
     public MotsPossible(int size, String langue, MessageChannel messageChannel) {
         List<String> all1;
         this.size = size;
-        ;
         try {
             all1 = Files.lines(Paths.get(langue)).filter(mot -> mot.length() == size).collect(Collectors.toList());
             motsPossible = all1;
@@ -154,7 +153,7 @@ public class MotsPossible {
         HashMap<String, Double> dic = new HashMap<>();
         int i = 1;
         int T = all.size();
-        messageChannel.sendMessage("Calculation...").queue();
+        long messageId=messageChannel.sendMessage("Calculation...").complete().getIdLong();
         for (String str : all) {
             double E = calculEsperance(str);
             //System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
@@ -165,30 +164,31 @@ public class MotsPossible {
             }
         }
 
-
         for (Map.Entry<String, Double> e : dic.entrySet()) {
             if (e.getValue() == esp) {
                 listMeilleur.add(e.getKey());
             }
 
         }
+
         int nb = listMeilleur.size();
         if (nb == 1) {
             String bestEntry = listMeilleur.get(0);
 
             if (motsPossible.contains(bestEntry)) {
-                messageChannel.sendMessage("Maybe the right one !").queue();
+                messageChannel.editMessageById(messageId,"Maybe the right one !").queue();
             } else {
-                messageChannel.sendMessage("To eliminate as many possibilities!").queue();
+                messageChannel.editMessageById(messageId,"To eliminate as many possibilities!").queue();
             }
             messageChannel.sendMessage("The best entry is :").queue();
             messageChannel.sendMessage("> " + GRAS + bestEntry + GRAS).queue();
             messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
         } else {
-            messageChannel.sendMessage(nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
+            messageChannel.editMessageById(messageId,nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
             if (toptop.size() > 0) {
                 System.out.println("oui");
+                listMeilleur=toptop;
             }
         }
 
