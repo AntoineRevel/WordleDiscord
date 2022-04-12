@@ -184,7 +184,7 @@ public class MotsPossible {
                 Collections.max(mapStream.values());
         List<String> listMeilleur = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
         long endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : Stream " + listMeilleur.size() + " " + listMeilleur);
+        System.out.println((endTime - startTime) + " ns : Stream " + listMeilleur.size());
 
         /*
         startTime = System.nanoTime();
