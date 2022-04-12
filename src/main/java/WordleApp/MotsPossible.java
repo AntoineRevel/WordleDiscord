@@ -149,17 +149,18 @@ public class MotsPossible {
     }
 
     public List<String> choix() {
-        long startTime = System.nanoTime();
+        long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
+        /*long startTime = System.nanoTime();
         List<String> listMeilleur = new ArrayList<>();
         double esp = 0;
         HashMap<String, Double> dic = new HashMap<>();
-        int i = 1;
-        int T = all.size();
-        long messageId=messageChannel.sendMessage("Calculation...").complete().getIdLong();
+        //int i = 1;
+        //int T = all.size();
+
         for (String str : all) {
             double E = calculEsperance(str);
-            System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
-            i++;
+            //System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
+            //i++;
             dic.put(str, E);
             if (esp < E) {
                 esp = E;
@@ -174,44 +175,45 @@ public class MotsPossible {
 
         }
         long endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : old "+listMeilleur.size() +" "+listMeilleur);
-
-        startTime = System.nanoTime();
-        Map<String, Double> mapStream= all.stream()
+        System.out.println((endTime - startTime) + " ns : old " + listMeilleur.size() + " " + listMeilleur);
+*/
+        long startTime = System.nanoTime();
+        Map<String, Double> mapStream = all.stream()
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
-        Double max=
+        Double espMax =
                 Collections.max(mapStream.values());
-        List<String> listMeilleurStrem = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), max)).map(Map.Entry::getKey).toList();
-        endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : Stream "+listMeilleurStrem.size() +" "+listMeilleurStrem);
+        List<String> listMeilleur = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
+        long endTime = System.nanoTime();
+        System.out.println((endTime - startTime) + " ns : Stream " + listMeilleur.size() + " " + listMeilleur);
 
+        /*
         startTime = System.nanoTime();
         Map<String, Double> mapStreamP= all.parallelStream()
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
         Double maxP=
                 Collections.max(mapStreamP.values());
-        List<String> listMeilleurStremP = mapStreamP.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), maxP)).map(Map.Entry::getKey).toList();
+        List<String> listMeilleurStremP = mapStreamP.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), maxP)).map(Map.Entry::getKey).toList();
         endTime = System.nanoTime();
         System.out.println((endTime - startTime) + " ns : Parallel Stream "+listMeilleurStremP.size() +" "+listMeilleurStremP); //why it doesn't work
-
+        */
         int nb = listMeilleur.size();
         if (nb == 1) {
             String bestEntry = listMeilleur.get(0);
 
             if (motsPossible.contains(bestEntry)) {
-                messageChannel.editMessageById(messageId,"Maybe the right one !").queue();
+                messageChannel.editMessageById(messageId, "Maybe the right one !").queue();
             } else {
-                messageChannel.editMessageById(messageId,"To eliminate as many possibilities!").queue();
+                messageChannel.editMessageById(messageId, "To eliminate as many possibilities!").queue();
             }
             messageChannel.sendMessage("The best entry is :").queue();
             messageChannel.sendMessage("> " + GRAS + bestEntry + GRAS).queue();
-            messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
+            messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
         } else {
-            messageChannel.editMessageById(messageId,nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", esp) + GRAS + " words removed.").queue();
+            messageChannel.editMessageById(messageId, nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
             if (toptop.size() > 0) {
                 System.out.println("oui");
-                listMeilleur=toptop;
+                listMeilleur = toptop;
             }
         }
 
