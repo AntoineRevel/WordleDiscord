@@ -81,7 +81,6 @@ public class ApplicationMots {
         if (sizeMP > 1) {
             List<String> choix = MP.choix();
             int size = choix.size();
-
             if (size == 1) {
                 lastProposition = choix.get(0);
             } else {

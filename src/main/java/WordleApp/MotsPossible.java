@@ -197,6 +197,15 @@ public class MotsPossible {
         System.out.println((endTime - startTime) + " ns : Parallel Stream "+listMeilleurStremP.size() +" "+listMeilleurStremP); //why it doesn't work
         */
         int nb = listMeilleur.size();
+        if (nb>1){
+            List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
+            if (toptop.size() > 0) {
+                System.out.println("oui");
+                listMeilleur = toptop;
+                nb = listMeilleur.size();
+            }
+        }
+
         if (nb == 1) {
             String bestEntry = listMeilleur.get(0);
 
@@ -210,11 +219,6 @@ public class MotsPossible {
             messageChannel.sendMessage("with an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
         } else {
             messageChannel.editMessageById(messageId, nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
-            List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
-            if (toptop.size() > 0) {
-                System.out.println("oui");
-                listMeilleur = toptop;
-            }
         }
 
         return listMeilleur;
