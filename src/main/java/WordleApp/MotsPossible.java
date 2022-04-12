@@ -179,7 +179,10 @@ public class MotsPossible {
 */
         long startTime = System.nanoTime();
         Map<String, Double> mapStream = all.stream()
-                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance, (mot1, mot2) -> {
+                    System.out.println(mot1 + " " + mot2);
+                    return mot1;
+                }));
         Double espMax =
                 Collections.max(mapStream.values());
         List<String> listMeilleur = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
@@ -197,7 +200,7 @@ public class MotsPossible {
         System.out.println((endTime - startTime) + " ns : Parallel Stream "+listMeilleurStremP.size() +" "+listMeilleurStremP); //why it doesn't work
         */
         int nb = listMeilleur.size();
-        if (nb>1){
+        if (nb > 1) {
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
             if (toptop.size() > 0) {
                 System.out.println("oui");

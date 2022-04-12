@@ -184,6 +184,7 @@ public class ApplicationMots {
             bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "374,294");
             bestOuverture.put(4, "taie" + GRAS + " with an expected value of " + GRAS + "1929,883");
 
+
         }
         int longeur = MP.getSize();
         String prop;
