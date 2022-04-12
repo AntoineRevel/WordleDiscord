@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -148,6 +149,7 @@ public class MotsPossible {
     }
 
     public List<String> choix() {
+        long startTime = System.nanoTime();
         List<String> listMeilleur = new ArrayList<>();
         double esp = 0;
         HashMap<String, Double> dic = new HashMap<>();
@@ -156,7 +158,7 @@ public class MotsPossible {
         long messageId=messageChannel.sendMessage("Calculation...").complete().getIdLong();
         for (String str : all) {
             double E = calculEsperance(str);
-            //System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
+            System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
             i++;
             dic.put(str, E);
             if (esp < E) {
@@ -164,12 +166,33 @@ public class MotsPossible {
             }
         }
 
+//.map(mot -> new AbstractMap.SimpleImmutableEntry<>(mot, calculEsperance(mot)))
         for (Map.Entry<String, Double> e : dic.entrySet()) {
             if (e.getValue() == esp) {
                 listMeilleur.add(e.getKey());
             }
 
         }
+        long endTime = System.nanoTime();
+        System.out.println((endTime - startTime) + " ns : old "+listMeilleur.size() +" "+listMeilleur);
+
+        startTime = System.nanoTime();
+        Map<String, Double> mapStream= all.stream()
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
+        Double max=
+                Collections.max(mapStream.values());
+        List<String> listMeilleurStrem = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), max)).map(Map.Entry::getKey).toList();
+        endTime = System.nanoTime();
+        System.out.println((endTime - startTime) + " ns : Stream "+listMeilleurStrem.size() +" "+listMeilleurStrem);
+
+        startTime = System.nanoTime();
+        Map<String, Double> mapStreamP= all.parallelStream()
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
+        Double maxP=
+                Collections.max(mapStreamP.values());
+        List<String> listMeilleurStremP = mapStreamP.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), maxP)).map(Map.Entry::getKey).toList();
+        endTime = System.nanoTime();
+        System.out.println((endTime - startTime) + " ns : Parallel Stream "+listMeilleurStremP.size() +" "+listMeilleurStremP); //why it doesn't work
 
         int nb = listMeilleur.size();
         if (nb == 1) {

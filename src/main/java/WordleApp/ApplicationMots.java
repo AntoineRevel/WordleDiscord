@@ -12,7 +12,10 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static discordBot.ButtumStart.code;
@@ -38,7 +41,7 @@ public class ApplicationMots {
 
 
     public ApplicationMots(ButtumStart bs, InteractionHook ih) {
-        String langue=bs.getLanguage();
+        String langue = bs.getLanguage();
         if (langue.equals("french")) {
             this.langue = cheminFR;
         } else if (langue.equals("english")) {
@@ -49,7 +52,7 @@ public class ApplicationMots {
         this.longeur = bs.getSize();
         this.bot = bs.getBot();
         this.messageChannel = ih.getInteraction().getMessageChannel();
-        this.bs=bs;
+        this.bs = bs;
 
         MP = new MotsPossible(longeur, this.langue, messageChannel);
 
@@ -74,8 +77,8 @@ public class ApplicationMots {
     }
 
     public void start2(String rep) {
-        int sizeMP= MP.elimination(new Reponse(lastProposition, rep));
-        if (sizeMP>1){
+        int sizeMP = MP.elimination(new Reponse(lastProposition, rep));
+        if (sizeMP > 1) {
             List<String> choix = MP.choix();
             int size = choix.size();
 
@@ -91,49 +94,48 @@ public class ApplicationMots {
                 System.out.println("Proposition : " + ANSI_RED + lastProposition + ANSI_RESET);*/
             }
             choixReponse();
-        } else if (sizeMP==1){
-            System.out.println(finPartie()+ "Success!");
+        } else if (sizeMP == 1) {
+            System.out.println(finPartie() + "Success!");
         } else {
-            System.out.println(finPartie()+ "Échec!");
+            System.out.println(finPartie() + "Échec!");
         }
     }
 
-    private String finPartie(){
-        messageChannel.sendMessage("The game is over you can retype "+"*"+code+"*"+" to play again.").queue();
+    private String finPartie() {
+        messageChannel.sendMessage("The game is over you can retype " + "*" + code + "*" + " to play again.").queue();
         bs.setPartieEnCour(false);
-        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) +" | "+messageChannel.getName() +" -> ";
+        return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) + " | " + messageChannel.getName() + " -> ";
     }
 
-    private void choixprop(List<String> choix){
-        List<Button> listButtum=new ArrayList<>();
-        List<Button> listButtumOff=new ArrayList<>();
+    private void choixprop(List<String> choix) {
+        List<Button> listButtum = new ArrayList<>();
+        List<Button> listButtumOff = new ArrayList<>();
 
-        for (int i=0;i<choix.size() && i<5;i++){
-            String prop=choix.get(i);
-            listButtum.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop));
-            listButtumOff.add(Button.of(ButtonStyle.PRIMARY,"choix:"+prop,prop).asDisabled());
+        for (int i = 0; i < choix.size() && i < 5; i++) {
+            String prop = choix.get(i);
+            listButtum.add(Button.of(ButtonStyle.PRIMARY, "choix:" + prop, prop));
+            listButtumOff.add(Button.of(ButtonStyle.PRIMARY, "choix:" + prop, prop).asDisabled());
         }
 
 
-        messageChannel.sendMessage("Choose one of these "+listButtum.size()+" :").setActionRow(listButtum).queue();
+        messageChannel.sendMessage("Choose one of these " + listButtum.size() + " :").setActionRow(listButtum).queue();
         bot.getEventWaiter().waitForEvent(
                 ButtonInteractionEvent.class,
                 buttonInteractionEvent -> buttonInteractionEvent.getComponentId().contains("choix:"),
-                e->{
+                e -> {
                     e.editMessage(e.getMessage()).setActionRow(listButtumOff).queue();
-                    lastProposition=e.getInteraction().getComponentId().substring(6);
-                    messageChannel.sendMessage("> "+ MotsPossible.GRAS + lastProposition+ MotsPossible.GRAS).queue();
+                    lastProposition = e.getInteraction().getComponentId().substring(6);
+                    messageChannel.sendMessage("> " + MotsPossible.GRAS + lastProposition + MotsPossible.GRAS).queue();
                     choixReponse();
 
-                },1,TimeUnit.MINUTES,
+                }, 1, TimeUnit.MINUTES,
                 () -> {
                     messageChannel.sendMessage("You didn't respond in time!").queue();
-                    System.out.println(finPartie()+ " Time out");
+                    System.out.println(finPartie() + " Time out");
                 }
 
         );
     }
-
 
 
     private void choixReponse() {
@@ -154,16 +156,19 @@ public class ApplicationMots {
                     }
                     return false;
                 },
-                e -> start2(e.getMessage().getContentRaw())
+                e -> {
+                    Thread t = new Thread(() -> start2(e.getMessage().getContentRaw()));
+                    t.start();
+                }
+
                 , 1, TimeUnit.MINUTES,
                 () -> {
                     message.getChannel().sendMessage("You didn't respond in time!").queue();
-                    System.out.println(finPartie()+ " Time out");
+                    System.out.println(finPartie() + " Time out");
                 }
 
         );
     }
-
 
 
     private String ouverture(MotsPossible MP) {
@@ -184,11 +189,11 @@ public class ApplicationMots {
         int longeur = MP.getSize();
         String prop;
         if (bestOuverture.containsKey(longeur)) {
-            String longProp=bestOuverture.get(longeur);
+            String longProp = bestOuverture.get(longeur);
             prop = longProp.substring(0, longeur);
             messageChannel.sendMessage("Best opening : ").queue();
-            messageChannel.sendMessage("> " + GRAS + prop + GRAS ).queue();
-            messageChannel.sendMessage(longProp.substring(longeur+2) +GRAS+" eliminated words.").queue();
+            messageChannel.sendMessage("> " + GRAS + prop + GRAS).queue();
+            messageChannel.sendMessage(longProp.substring(longeur + 2) + GRAS + " eliminated words.").queue();
             return prop;
         }
         prop = MP.random();
