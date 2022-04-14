@@ -23,7 +23,7 @@ public class MotsPossible {
     private final MessageChannel messageChannel;
 
 
-    private int div;
+    //private int div;
 
 
     public MotsPossible(int size, String langue, MessageChannel messageChannel) {
@@ -94,14 +94,6 @@ public class MotsPossible {
         return mtm;
     }
 
-    private double proba(String mot, Reponse.Rep[] reponse) {
-        int probaXsize = elimine(new Reponse(mot, reponse)).size();
-        int nbElimination = motsPossible.size() - probaXsize;
-        int mult = probaXsize * nbElimination;
-        div = div + probaXsize;
-
-        return mult;
-    }
 
     private List<String> elimine(Reponse reponse) {
         List<Character> letresPresente = new ArrayList<>();
@@ -122,15 +114,15 @@ public class MotsPossible {
                 char c = reponse.getProposition(i);
                 return mot -> {
                     if (rep == Reponse.Rep.Correct) {
-                        if (mot.charAt(i) != c) return false;
-                    } else if (rep == Reponse.Rep.WrongSpot) {
+                        return mot.charAt(i) == c;
+                    }
+                    if (rep == Reponse.Rep.WrongSpot) {
                         int index = mot.indexOf(c);
                         if (index == -1) return false;
-                        for (; index >= 0; index = mot.indexOf(c, index + 1)) {
+                        for (; index >= 0; index = mot.indexOf(c, index + 1)) { //list of index better
                             if (index == i) return false;
                         }
-                    } else if (mot.chars().filter(ch -> ch == c).count() > Collections.frequency(letresPresente, c))
-                        return false;
+                    } else return mot.chars().filter(ch -> ch == c).count() <= Collections.frequency(letresPresente, c);
                     return true;
                 };
             }
@@ -141,64 +133,31 @@ public class MotsPossible {
 
     public double calculEsperance(String mot) {
         double Esperance = 0;
-        div = 0;
+        int div = 0;
         for (Reponse.Rep[] rep : possibiliter) {
-            Esperance = Esperance + proba(mot, rep);
+            int probaXsize = elimine(new Reponse(mot, rep)).size();
+            int nbElimination = motsPossible.size() - probaXsize;
+            int mult = probaXsize * nbElimination;
+            Esperance = Esperance + mult;
+            div = div + probaXsize;
+
         }
         return Esperance / div;
+
+
     }
 
     public List<String> choix() {
         long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
-        /*long startTime = System.nanoTime();
-        List<String> listMeilleur = new ArrayList<>();
-        double esp = 0;
-        HashMap<String, Double> dic = new HashMap<>();
-        //int i = 1;
-        //int T = all.size();
-
-        for (String str : all) {
-            double E = calculEsperance(str);
-            //System.out.println("[" + i + "/" + T + "] " + str + " with a score of : " + String.format("%.3f", E));
-            //i++;
-            dic.put(str, E);
-            if (esp < E) {
-                esp = E;
-            }
-        }
-
-//.map(mot -> new AbstractMap.SimpleImmutableEntry<>(mot, calculEsperance(mot)))
-        for (Map.Entry<String, Double> e : dic.entrySet()) {
-            if (e.getValue() == esp) {
-                listMeilleur.add(e.getKey());
-            }
-
-        }
-        long endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : old " + listMeilleur.size() + " " + listMeilleur);
-*/
         long startTime = System.nanoTime();
-        Map<String, Double> mapStream = all.stream()
-                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance, (mot1, mot2) -> {
-                    System.out.println(mot1 + " " + mot2);
-                    return mot1;
-                }));
+        Map<String, Double> mapStream = all.parallelStream()
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
         Double espMax =
                 Collections.max(mapStream.values());
-        List<String> listMeilleur = mapStream.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
+        List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(),espMax)).map(Map.Entry::getKey).toList();
         long endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : Stream " + listMeilleur.size());
+        System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + " " + listMeilleur); //why it doesn't work
 
-        /*
-        startTime = System.nanoTime();
-        Map<String, Double> mapStreamP= all.parallelStream()
-                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
-        Double maxP=
-                Collections.max(mapStreamP.values());
-        List<String> listMeilleurStremP = mapStreamP.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), maxP)).map(Map.Entry::getKey).toList();
-        endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : Parallel Stream "+listMeilleurStremP.size() +" "+listMeilleurStremP); //why it doesn't work
-        */
         int nb = listMeilleur.size();
         if (nb > 1) {
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
