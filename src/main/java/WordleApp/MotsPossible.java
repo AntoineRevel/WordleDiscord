@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+
 public class MotsPossible {
 
     public static final String GRAS = "**";
@@ -147,6 +148,17 @@ public class MotsPossible {
 
     }
 
+    public List<String> choixBest(){
+        Map<String, Double> mapStream = all.parallelStream()
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
+        Double espMax =
+                Collections.max(mapStream.values());
+
+        List<String> listMeilleur=mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
+        System.out.println("The best opening for "+size+" : " + listMeilleur + "with : "+espMax);
+        return listMeilleur;
+    }
+
     public List<String> choix() {
         long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
         long startTime = System.nanoTime();
@@ -156,8 +168,7 @@ public class MotsPossible {
                 Collections.max(mapStream.values());
         List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
         long endTime = System.nanoTime();
-        System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + " " + listMeilleur); //why it doesn't work
-        System.out.println(espMax+ " "+listMeilleur);
+        System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + espMax);
 
         int nb = listMeilleur.size();
         if (nb > 1) {

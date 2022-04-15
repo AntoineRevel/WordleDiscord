@@ -65,7 +65,7 @@ public class ApplicationMots {
     }
 
     public void startFindBest() {
-        List<String> best = MP.choix();
+        List<String> best = MP.choixBest();
 
         messageChannel.sendMessage(best.toString()).queue();
         bs.setPartieEnCour(false);
