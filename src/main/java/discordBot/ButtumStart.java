@@ -17,6 +17,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Antoine Revel
+ *
+ */
+
+
 public class ButtumStart extends ListenerAdapter {
     private final Bot bot;
     public static final String code = "Mot";
@@ -105,7 +111,7 @@ public class ButtumStart extends ListenerAdapter {
 
     private void startParty(InteractionHook interactionHook) {
         ApplicationMots am = new ApplicationMots(this, interactionHook);
-        am.startFindBest();
+        am.start();
     }
 
     public Bot getBot() {

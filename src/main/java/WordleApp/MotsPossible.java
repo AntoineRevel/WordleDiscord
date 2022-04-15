@@ -11,6 +11,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/**
+ * @author Antoine Revel
+ *
+ */
+
 
 public class MotsPossible {
 
@@ -148,7 +153,7 @@ public class MotsPossible {
 
     }
 
-    public List<String> choixBest(){
+    public List<String> choixBest(){ //for findind best solutioin
         Map<String, Double> mapStream = all.parallelStream()
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
         Double espMax =

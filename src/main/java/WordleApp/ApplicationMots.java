@@ -15,6 +15,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Antoine Revel
+ *
+ */
+
+
 public class ApplicationMots {
     public final String GRAS = "**";
 
@@ -220,7 +226,7 @@ public class ApplicationMots {
             bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.3");
             bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.6");
             bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.6");
-            bestOuverture.put(6, "sailer" + GRAS + " with an expected value of " + GRAS + "6877.693");
+            bestOuverture.put(6, "sailer" + GRAS + " with an expected value of " + GRAS + "6877.7");
         }
 
         if (langue.equals(cheminFR)) {
@@ -228,12 +234,13 @@ public class ApplicationMots {
             bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "361.133");
             bestOuverture.put(4, "raie" + GRAS + " with an expected value of " + GRAS + "1707.937");
             bestOuverture.put(5, "raies" + GRAS + " with an expected value of " + GRAS + "5784.177");
+            bestOuverture.put(6, "taries" + GRAS + " with an expected value of " + GRAS + "13801.754");
 
 
         }
         int longeur = MP.getSize();
         String prop;
-        if (bestOuverture.containsKey(longeur)) {
+        if (bestOuverture.containsKey(longeur) && !bs.isFirstLetter()) {
             String longProp = bestOuverture.get(longeur);
             prop = longProp.substring(0, longeur);
             messageChannel.sendMessage("Best opening : ").queue();
