@@ -151,11 +151,7 @@ public class MotsPossible {
         //long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
         long startTime = System.nanoTime();
         Map<String, Double> mapStream = all.parallelStream()
-                .collect(Collectors.toUnmodifiableMap(Function.identity(), mot -> {
-                    double esp = calculEsperance(mot);
-                    System.out.println(mot+" : "+esp);
-                    return esp;
-                }));
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
         Double espMax =
                 Collections.max(mapStream.values());
         List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();

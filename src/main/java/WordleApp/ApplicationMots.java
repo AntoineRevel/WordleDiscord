@@ -64,8 +64,8 @@ public class ApplicationMots {
 
     }
 
-    public void startFindBest(){
-        List<String> best=MP.choix();
+    public void startFindBest() {
+        List<String> best = MP.choix();
 
         messageChannel.sendMessage(best.toString()).queue();
         bs.setPartieEnCour(false);
@@ -124,11 +124,11 @@ public class ApplicationMots {
                 },
                 e -> {
                     MP.removeFirstLetter(e.getMessage().getContentRaw().toLowerCase(Locale.ROOT).charAt(0));
-                    lastProposition= MP.random();
+                    lastProposition = MP.random();
                     messageChannel.sendMessage("Proposal of a random opening :").queue();
                     messageChannel.sendMessage("> " + GRAS + lastProposition + GRAS).queue();
                     messageChannel.sendMessage("Calculation of the expectation...")
-                            .queue(msg ->{
+                            .queue(msg -> {
                                         msg.editMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(lastProposition)) + GRAS + " eliminated words.").queue();
                                         choixReponse();
                                     }
@@ -220,6 +220,7 @@ public class ApplicationMots {
             bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.3");
             bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.6");
             bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.6");
+            bestOuverture.put(6, "railes" + GRAS + " with an expected value of " + GRAS + "6878.849");
         }
 
         if (langue.equals(cheminFR)) {
@@ -227,7 +228,6 @@ public class ApplicationMots {
             bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "361.133");
             bestOuverture.put(4, "raie" + GRAS + " with an expected value of " + GRAS + "1707.937");
             bestOuverture.put(5, "raies" + GRAS + " with an expected value of " + GRAS + "5784.177");
-
 
 
         }
@@ -242,17 +242,12 @@ public class ApplicationMots {
             return prop;
         }
         prop = MP.random();
-        if (longeur == 6) {
-            messageChannel.sendMessage("Proposal of a random opening :").queue();
-            messageChannel.sendMessage("> " + MotsPossible.GRAS + prop + MotsPossible.GRAS).queue();
-            messageChannel.sendMessage("Calculation of the expectation...").queue(message ->
-                    message.editMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(prop)) + GRAS + " eliminated words.").queue());
 
-        } else {
-            messageChannel.sendMessage("Proposal of a random opening :").queue();
-            messageChannel.sendMessage("> " + GRAS + prop + GRAS).queue();
-        }
-        //System.out.println(prop);
+        messageChannel.sendMessage("Proposal of a random opening :").queue();
+        messageChannel.sendMessage("> " + GRAS + prop + GRAS).queue();
+        messageChannel.sendMessage("Calculation of the expectation...").queue(message ->
+                        message.editMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(prop)) + GRAS + " eliminated words.").queue());
+
         return prop;
     }
 }
