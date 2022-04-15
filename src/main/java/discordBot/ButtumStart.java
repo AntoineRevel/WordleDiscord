@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class ButtumStart extends ListenerAdapter {
@@ -104,7 +105,7 @@ public class ButtumStart extends ListenerAdapter {
 
     private void startParty(InteractionHook interactionHook) {
         ApplicationMots am = new ApplicationMots(this, interactionHook);
-        am.start();
+        am.startBest();
     }
 
     public Bot getBot() {
@@ -128,7 +129,7 @@ public class ButtumStart extends ListenerAdapter {
         bot.getEventWaiter().waitForEvent(
                 MessageReceivedEvent.class,
                 e -> {
-                    if (e.getAuthor().isBot() || !e.getChannel().getId().equals(interactionHook.getInteraction().getChannel().getId()))
+                    if (e.getAuthor().isBot() || !e.getChannel().getId().equals(Objects.requireNonNull(interactionHook.getInteraction().getChannel()).getId()))
                         return false;
                     try {
                         int i = Integer.parseInt(e.getMessage().getContentRaw());

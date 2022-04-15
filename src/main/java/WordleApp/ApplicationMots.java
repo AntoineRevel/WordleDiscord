@@ -15,8 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static discordBot.ButtumStart.code;
-
 public class ApplicationMots {
     public final String GRAS = "**";
 
@@ -64,6 +62,12 @@ public class ApplicationMots {
         embedBuilder.addField("2  :  For a letter in the right place.  (green)", "", false);
         messageChannel.sendMessageEmbeds(embedBuilder.build()).queue();
 
+    }
+
+    public void startBest(){
+        List<String> best=MP.choix();
+        System.out.println(best);
+        messageChannel.sendMessage(best.toString()).queue();
     }
 
 
@@ -138,7 +142,7 @@ public class ApplicationMots {
     }
 
     private String finPartie() {
-        messageChannel.sendMessage("The game is over you can retype " + "*" + code + "*" + " to play again.").queue();
+        messageChannel.sendMessage("The game is over you can retype " + "*" + ButtumStart.code + "*" + " to play again.").queue();
         bs.setPartieEnCour(false);
         return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date()) + " | " + messageChannel.getName() + " -> ";
     }

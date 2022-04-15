@@ -148,16 +148,20 @@ public class MotsPossible {
     }
 
     public List<String> choix() {
-        long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
+        //long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
         long startTime = System.nanoTime();
         Map<String, Double> mapStream = all.parallelStream()
-                .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
+                .collect(Collectors.toUnmodifiableMap(Function.identity(), mot -> {
+                    double esp = calculEsperance(mot);
+                    System.out.println(mot+" : "+esp);
+                    return esp;
+                }));
         Double espMax =
                 Collections.max(mapStream.values());
-        List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(),espMax)).map(Map.Entry::getKey).toList();
+        List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
         long endTime = System.nanoTime();
         System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + " " + listMeilleur); //why it doesn't work
-
+/*
         int nb = listMeilleur.size();
         if (nb > 1) {
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
@@ -182,6 +186,7 @@ public class MotsPossible {
         } else {
             messageChannel.editMessageById(messageId, nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
         }
+        */
 
         return listMeilleur;
     }
@@ -204,6 +209,6 @@ public class MotsPossible {
     }
 
     public void removeFirstLetter(char c) {
-        this.motsPossible = motsPossible.stream().filter(mot->mot.charAt(0)==c).toList();
+        this.motsPossible = motsPossible.stream().filter(mot -> mot.charAt(0) == c).toList();
     }
 }
