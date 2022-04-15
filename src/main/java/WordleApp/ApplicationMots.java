@@ -64,10 +64,12 @@ public class ApplicationMots {
 
     }
 
-    public void startBest(){
+    public void startFindBest(){
         List<String> best=MP.choix();
 
         messageChannel.sendMessage(best.toString()).queue();
+        bs.setPartieEnCour(false);
+
     }
 
 
@@ -222,7 +224,7 @@ public class ApplicationMots {
 
         if (langue.equals(cheminFR)) {
             bestOuverture.put(2, "au" + GRAS + " with an expected value of " + GRAS + "48,374");
-            bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "374,294");
+            bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "361.133");
             bestOuverture.put(4, "taie" + GRAS + " with an expected value of " + GRAS + "1929,883");
 
 
