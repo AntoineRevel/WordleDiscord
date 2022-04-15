@@ -23,5 +23,5 @@ test {
 }
 
 application {
-    mainClass = 'java/discordBot/Bot.java'
+    mainClass = 'discordBot.Bot'
 }
