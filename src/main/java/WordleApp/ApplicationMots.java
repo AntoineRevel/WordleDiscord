@@ -220,7 +220,7 @@ public class ApplicationMots {
             bestOuverture.put(3, "eat" + GRAS + " with an expected value of " + GRAS + "462.3");
             bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.6");
             bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.6");
-            bestOuverture.put(6, "railes" + GRAS + " with an expected value of " + GRAS + "6878.849");
+            bestOuverture.put(6, "sailer" + GRAS + " with an expected value of " + GRAS + "6877.693");
         }
 
         if (langue.equals(cheminFR)) {

@@ -148,7 +148,7 @@ public class MotsPossible {
     }
 
     public List<String> choix() {
-        //long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
+        long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
         long startTime = System.nanoTime();
         Map<String, Double> mapStream = all.parallelStream()
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
@@ -159,7 +159,7 @@ public class MotsPossible {
         System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + " " + listMeilleur); //why it doesn't work
         System.out.println(espMax+ " "+listMeilleur);
 
-        /*int nb = listMeilleur.size();
+        int nb = listMeilleur.size();
         if (nb > 1) {
             List<String> toptop = listMeilleur.stream().filter(mot -> motsPossible.contains(mot)).toList();
             if (toptop.size() > 0) {
@@ -183,7 +183,7 @@ public class MotsPossible {
         } else {
             messageChannel.editMessageById(messageId, nb + " proposals have an expectation of " + GRAS + String.format("%(.1f", espMax) + GRAS + " words removed.").queue();
         }
-*/
+
         return listMeilleur;
     }
 
