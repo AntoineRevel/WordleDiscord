@@ -223,9 +223,11 @@ public class ApplicationMots {
         }
 
         if (langue.equals(cheminFR)) {
-            bestOuverture.put(2, "au" + GRAS + " with an expected value of " + GRAS + "48,374");
+            bestOuverture.put(2, "eu" + GRAS + " with an expected value of " + GRAS + "46.691");
             bestOuverture.put(3, "aie" + GRAS + " with an expected value of " + GRAS + "361.133");
-            bestOuverture.put(4, "taie" + GRAS + " with an expected value of " + GRAS + "1929,883");
+            bestOuverture.put(4, "raie" + GRAS + " with an expected value of " + GRAS + "1707.937");
+            bestOuverture.put(5, "raies" + GRAS + " with an expected value of " + GRAS + "5784.177");
+
 
 
         }
