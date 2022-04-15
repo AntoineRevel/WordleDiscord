@@ -161,6 +161,7 @@ public class MotsPossible {
         List<String> listMeilleur = mapStream.entrySet().parallelStream().filter(entry -> Objects.equals(entry.getValue(), espMax)).map(Map.Entry::getKey).toList();
         long endTime = System.nanoTime();
         System.out.println((endTime - startTime) + " ns : Parallel Stream " + listMeilleur.size() + " " + listMeilleur); //why it doesn't work
+        System.out.println(espMax+ " "+listMeilleur);
 /*
         int nb = listMeilleur.size();
         if (nb > 1) {

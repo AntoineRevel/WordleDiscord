@@ -66,7 +66,7 @@ public class ApplicationMots {
 
     public void startBest(){
         List<String> best=MP.choix();
-        System.out.println(best);
+
         messageChannel.sendMessage(best.toString()).queue();
     }
 
