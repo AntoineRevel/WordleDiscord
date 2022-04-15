@@ -12,10 +12,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static discordBot.ButtumStart.code;
@@ -72,8 +69,13 @@ public class ApplicationMots {
 
     public void start() {
         afficheRegle();
-        lastProposition = ouverture(MP);
-        choixReponse();
+        if (bs.isFirstLetter()) {
+            messageChannel.sendMessage("First letter :").queue(this::typeFirstLettre);
+
+        } else {
+            lastProposition = ouverture(MP);
+            choixReponse();
+        }
     }
 
     public void start2(String rep) {
@@ -98,6 +100,41 @@ public class ApplicationMots {
         } else {
             System.out.println(finPartie() + "Échec!");
         }
+    }
+
+    private void typeFirstLettre(Message message) {
+        bot.getEventWaiter().waitForEvent(
+                MessageReceivedEvent.class,
+                e -> {
+                    if (e.getAuthor().isBot() || !e.getChannel().getId().equals(message.getChannel().getId()))
+                        return false;
+                    String firstLettre = e.getMessage().getContentRaw();
+                    if (firstLettre.length() == 1 && Character.isLetter(firstLettre.charAt(0))) {
+                        return true;
+                    } else {
+                        e.getChannel().sendMessage("Entrez la premiere letter.").queue();
+                    }
+                    return false;
+                },
+                e -> {
+                    MP.removeFirstLetter(e.getMessage().getContentRaw().toLowerCase(Locale.ROOT).charAt(0));
+                    lastProposition= MP.random();
+                    messageChannel.sendMessage("Proposal of a random opening :").queue();
+                    messageChannel.sendMessage("> " + GRAS + lastProposition + GRAS).queue();
+                    messageChannel.sendMessage("Calculation of the expectation...")
+                            .queue(msg ->{
+                                        msg.editMessage(" with an expected value of " + GRAS + String.format("%.3f", MP.calculEsperance(lastProposition)) + GRAS + " eliminated words.").queue();
+                                        choixReponse();
+                                    }
+                            );
+
+                }
+                , 1, TimeUnit.MINUTES, () -> {
+                    message.getChannel().sendMessage("You didn't respond in time!").queue();
+                    System.out.println(finPartie() + " Time out");
+                }
+
+        );
     }
 
     private String finPartie() {

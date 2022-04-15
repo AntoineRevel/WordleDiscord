@@ -202,4 +202,8 @@ public class MotsPossible {
     public List<Reponse.Rep[]> getPossibiliter() {
         return possibiliter;
     }
+
+    public void removeFirstLetter(char c) {
+        this.motsPossible = motsPossible.stream().filter(mot->mot.charAt(0)==c).toList();
+    }
 }
