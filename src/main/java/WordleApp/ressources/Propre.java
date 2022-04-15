@@ -8,7 +8,7 @@ import java.util.Locale;
 
 public class Propre {
     public static void main(String[] args) throws IOException {
-        FileWriter out = new FileWriter("src/main/java/WordleApp/ressources/motsFR.txt");
+        /*FileWriter out = new FileWriter("src/main/java/WordleApp/ressources/motsFR.txt");
         Files.lines(Paths.get("src/main/java/WordleApp/ressources/motsFR.txt")).map(mot -> {
             System.out.println(mot);
             return mot.toLowerCase(Locale.ROOT);})
@@ -19,7 +19,7 @@ public class Propre {
                     e.printStackTrace();
                 }
             });
-            out.close();
+            out.close();*/
         }
     }
 
