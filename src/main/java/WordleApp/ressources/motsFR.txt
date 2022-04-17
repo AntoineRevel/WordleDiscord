@@ -134212,8 +134212,6 @@ esquilles
 esquimau
 esquimaud
 esquimaude
-esquimaude
-esquimaudes
 esquimaudes
 esquimauds
 esquimautage
@@ -177366,7 +177364,6 @@ internerons
 interneront
 internes
 internet
-internet
 internez
 interniez
 internions
@@ -205076,7 +205073,6 @@ naphte
 naphtes
 naphtol
 naphtols
-napoleon
 napoleon
 napoleonien
 napoleonienne

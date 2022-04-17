@@ -227,6 +227,8 @@ public class ApplicationMots {
             bestOuverture.put(4, "sale" + GRAS + " with an expected value of " + GRAS + "2146.6");
             bestOuverture.put(5, "tares" + GRAS + " with an expected value of " + GRAS + "4175.6");
             bestOuverture.put(6, "sailer" + GRAS + " with an expected value of " + GRAS + "6877.7");
+            bestOuverture.put(7, "saltier" + GRAS + " with an expected value of " + GRAS + "9173.5");
+            bestOuverture.put(8, "notaries" + GRAS + " with an expected value of " + GRAS + "9380.1");
         }
 
         if (langue.equals(cheminFR)) {
@@ -235,6 +237,7 @@ public class ApplicationMots {
             bestOuverture.put(4, "raie" + GRAS + " with an expected value of " + GRAS + "1707.937");
             bestOuverture.put(5, "raies" + GRAS + " with an expected value of " + GRAS + "5784.177");
             bestOuverture.put(6, "taries" + GRAS + " with an expected value of " + GRAS + "13801.754");
+            bestOuverture.put(7, "ratines" + GRAS + " with an expected value of " + GRAS + "25368.590");
 
 
         }
