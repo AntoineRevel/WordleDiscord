@@ -111,7 +111,7 @@ public class ButtumStart extends ListenerAdapter {
 
     private void startParty(InteractionHook interactionHook) {
         ApplicationMots am = new ApplicationMots(this, interactionHook);
-        am.startFindBest();
+        am.start();
     }
 
     public Bot getBot() {
