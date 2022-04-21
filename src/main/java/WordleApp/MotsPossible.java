@@ -165,8 +165,12 @@ public class MotsPossible {
     }
 
     public List<String> choix() {
+        int timeChek= (int) (all.size()*Math.pow(3,size)*motsPossible.size());
+        messageChannel.sendMessage(String.valueOf(timeChek)).queue();
+
         long messageId = messageChannel.sendMessage("Calculation...").complete().getIdLong();
         long startTime = System.nanoTime();
+
         Map<String, Double> mapStream = all.parallelStream()
                 .collect(Collectors.toUnmodifiableMap(Function.identity(), this::calculEsperance));
         Double espMax =
